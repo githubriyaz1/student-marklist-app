@@ -6,6 +6,7 @@ const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const path = require('path');
+// The 'node-fetch' import has been removed as fetch is globally available in modern Node.js
 
 // --- 2. Initialize Express App ---
 const app = express();
@@ -16,6 +17,8 @@ app.use(cors());
 app.use(bodyParser.json());
 
 // --- 4. MongoDB Connection ---
+// This will use the DB_URI from Render's environment variables when deployed.
+// For local testing, it uses your provided Atlas connection string as a fallback.
 const dbURI = process.env.DB_URI || 'mongodb+srv://students:23ITR061@cluster0.elnq9xz.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0';
 
 
@@ -28,7 +31,6 @@ mongoose.connect(dbURI, {
 
 
 // --- 4.5 Serve Frontend Files ---
-// This section is now updated for production
 app.use(express.static(path.join(__dirname, '..', 'frontend', 'build')));
 
 
@@ -47,7 +49,8 @@ const Student = mongoose.model('Student', studentSchema);
 
 
 // --- 6. API Routes ---
-// All API routes should come before the catch-all route
+
+// GET all students
 app.get('/api/students', async (req, res) => {
   try {
     const students = await Student.find({});
@@ -79,6 +82,7 @@ app.get('/api/students', async (req, res) => {
   }
 });
 
+// POST a new student
 app.post('/api/students', async (req, res) => {
   try {
     const { studentName, registerNumber, subject1, subject2, subject3, subject4, subject5 } = req.body;
@@ -90,11 +94,12 @@ app.post('/api/students', async (req, res) => {
     const newStudent = new Student({
       studentName,
       registerNumber,
-      subject1,
-      subject2,
-      subject3,
-      subject4,
-      subject5,
+      // *** THE FIX IS HERE: Convert string marks to numbers ***
+      subject1: parseInt(subject1),
+      subject2: parseInt(subject2),
+      subject3: parseInt(subject3),
+      subject4: parseInt(subject4),
+      subject5: parseInt(subject5),
     });
 
     const savedStudent = await newStudent.save();
@@ -108,14 +113,73 @@ app.post('/api/students', async (req, res) => {
   }
 });
 
-// The "catchall" handler: for any request that doesn't match one above,
-// send back React's index.html file.
+
+// --- 7. NEW AI FEEDBACK ROUTE ---
+app.post('/api/students/:id/feedback', async (req, res) => {
+    try {
+        const student = await Student.findById(req.params.id);
+        if (!student) {
+            return res.status(404).json({ message: 'Student not found' });
+        }
+
+        const { studentName, subject1, subject2, subject3, subject4, subject5 } = student;
+        const marks = [subject1, subject2, subject3, subject4, subject5];
+
+        // Construct a detailed prompt for the AI
+        const prompt = `
+            Act as an experienced academic advisor. Analyze the performance of a student named ${studentName}.
+            The student's marks in 5 subjects are: ${marks.join(', ')}.
+            
+            Provide a concise, constructive, and encouraging analysis in about 3-4 sentences.
+            - Start by mentioning a positive aspect, if any.
+            - Identify the areas that need improvement.
+            - Suggest a key area to focus on for better results.
+            - Do not use bullet points. Write it as a single paragraph.
+        `;
+        
+        // Call the Gemini API
+        // This will use the GEMINI_API_KEY from Render's environment variables when deployed.
+        // For local testing, it uses your provided API key as a fallback.
+        const GEMINI_API_KEY = process.env.GEMINI_API_KEY || 'AIzaSyDqM-T9d3T1U79bHM7m7J_i-oATUDULQCM';
+        const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${GEMINI_API_KEY}`;
+
+        const response = await fetch(API_URL, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                contents: [{
+                    parts: [{ text: prompt }]
+                }]
+            })
+        });
+
+        if (!response.ok) {
+            const errorBody = await response.json();
+            console.error('Gemini API Error:', errorBody);
+            throw new Error(`Gemini API request failed with status ${response.status}`);
+        }
+
+        const result = await response.json();
+        const feedback = result.candidates[0].content.parts[0].text;
+
+        res.status(200).json({ feedback });
+
+    } catch (error) {
+        console.error('Error getting AI feedback:', error);
+        res.status(500).json({ message: 'Failed to get AI feedback' });
+    }
+});
+
+
+// The "catchall" handler
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, '..', 'frontend', 'build', 'index.html'));
 });
 
 
-// --- 7. Start the Server ---
+// --- 8. Start the Server ---
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });

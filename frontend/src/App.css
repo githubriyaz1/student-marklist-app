@@ -1,5 +1,8 @@
 /* App.css */
 
+/* --- Google Fonts Import --- */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
 /* --- General Body and Font Styling --- */
 body {
     font-family: 'Poppins', sans-serif;
@@ -123,23 +126,26 @@ legend {
 }
 
 /* --- Button Styling --- */
-.submit-btn, .pdf-btn {
-    width: 100%;
+.submit-btn, .pdf-btn, .ai-btn, .close-btn {
     padding: 0.85rem 1rem;
     border: none;
     border-radius: 8px;
-    font-size: 1.1rem;
+    font-size: 1rem;
     font-weight: 600;
     cursor: pointer;
     transition: all 0.3s ease;
-    color: #485DA6;
-    background: #fff;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
 }
 
-.submit-btn:hover {
+.submit-btn:hover, .pdf-btn:hover, .ai-btn:hover, .close-btn:hover {
     transform: translateY(-3px);
     box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+}
+
+.submit-btn {
+    width: 100%;
+    color: #485DA6;
+    background: #fff;
 }
 
 /* --- Table Styling --- */
@@ -175,16 +181,20 @@ tbody tr:hover {
     background-color: rgba(255, 255, 255, 0.1);
 }
 
+.actions-cell {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+}
+
 .pdf-btn {
-    font-size: 0.9rem;
-    padding: 0.5rem 1rem;
-    width: auto;
     background: #00BF98;
     color: #fff;
 }
 
-.pdf-btn:hover {
-    background: #00a182;
+.ai-btn {
+    background: #8A2BE2; /* A nice purple for AI */
+    color: #fff;
 }
 
 /* --- Messages and Spinners --- */
@@ -228,4 +238,42 @@ tbody tr:hover {
 @keyframes spin {
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
+}
+
+/* --- AI Modal Styling --- */
+.modal-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.6);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.modal-content {
+    width: 90%;
+    max-width: 500px;
+    padding: 2rem;
+    color: #fff;
+}
+
+.modal-content h3 {
+    margin-top: 0;
+    border-bottom: none;
+}
+
+.feedback-text {
+    font-size: 1.1rem;
+    line-height: 1.6;
+    margin: 1.5rem 0;
+}
+
+.close-btn {
+    width: 100%;
+    background: #fff;
+    color: #485DA6;
 }
