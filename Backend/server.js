@@ -6,7 +6,6 @@ const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const path = require('path');
-// The 'node-fetch' import has been removed as fetch is globally available in modern Node.js
 
 // --- 2. Initialize Express App ---
 const app = express();
@@ -17,9 +16,7 @@ app.use(cors());
 app.use(bodyParser.json());
 
 // --- 4. MongoDB Connection ---
-// This will use the DB_URI from Render's environment variables when deployed.
-// For local testing, it uses your provided Atlas connection string as a fallback.
-const dbURI = process.env.DB_URI || 'mongodb+srv://students:23ITR061@cluster0.elnq9xz.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0';
+const dbURI = process.env.DB_URI || 'mongodb+srv://students:23ITR061@cluster0.elnq9xz.mongodb.net/studentDB?retryWrites=true&w=majority&appName=Cluster0';
 
 
 mongoose.connect(dbURI, {
@@ -35,14 +32,15 @@ app.use(express.static(path.join(__dirname, '..', 'frontend', 'build')));
 
 
 // --- 5. Define the Student Schema and Model ---
+// *** THIS SECTION IS UPDATED with new subject names ***
 const studentSchema = new mongoose.Schema({
   studentName: { type: String, required: true },
   registerNumber: { type: String, required: true, unique: true },
-  subject1: { type: Number, required: true, min: 0, max: 100 },
-  subject2: { type: Number, required: true, min: 0, max: 100 },
-  subject3: { type: Number, required: true, min: 0, max: 100 },
-  subject4: { type: Number, required: true, min: 0, max: 100 },
-  subject5: { type: Number, required: true, min: 0, max: 100 },
+  tamil: { type: Number, required: true, min: 0, max: 100 },
+  english: { type: Number, required: true, min: 0, max: 100 },
+  maths: { type: Number, required: true, min: 0, max: 100 },
+  science: { type: Number, required: true, min: 0, max: 100 },
+  social: { type: Number, required: true, min: 0, max: 100 },
 }, { timestamps: true });
 
 const Student = mongoose.model('Student', studentSchema);
@@ -56,8 +54,9 @@ app.get('/api/students', async (req, res) => {
     const students = await Student.find({});
     
     const marklists = students.map(student => {
-      const { subject1, subject2, subject3, subject4, subject5 } = student;
-      const total = subject1 + subject2 + subject3 + subject4 + subject5;
+      // *** THIS SECTION IS UPDATED with new subject names ***
+      const { tamil, english, maths, science, social } = student;
+      const total = tamil + english + maths + science + social;
       const average = total / 5;
       
       let grade = 'F';
@@ -85,21 +84,21 @@ app.get('/api/students', async (req, res) => {
 // POST a new student
 app.post('/api/students', async (req, res) => {
   try {
-    const { studentName, registerNumber, subject1, subject2, subject3, subject4, subject5 } = req.body;
+    // *** THIS SECTION IS UPDATED with new subject names ***
+    const { studentName, registerNumber, tamil, english, maths, science, social } = req.body;
 
-    if (!studentName || !registerNumber || subject1 === undefined) {
+    if (!studentName || !registerNumber || tamil === undefined) {
       return res.status(400).json({ message: 'Please provide all required fields.' });
     }
 
     const newStudent = new Student({
       studentName,
       registerNumber,
-      // *** THE FIX IS HERE: Convert string marks to numbers ***
-      subject1: parseInt(subject1),
-      subject2: parseInt(subject2),
-      subject3: parseInt(subject3),
-      subject4: parseInt(subject4),
-      subject5: parseInt(subject5),
+      tamil: parseInt(tamil),
+      english: parseInt(english),
+      maths: parseInt(maths),
+      science: parseInt(science),
+      social: parseInt(social),
     });
 
     const savedStudent = await newStudent.save();
@@ -109,6 +108,7 @@ app.post('/api/students', async (req, res) => {
     if (error.code === 11000) {
         return res.status(409).json({ message: 'Error: Register number already exists.'});
     }
+    console.error('Error saving student:', error);
     res.status(500).json({ message: 'Error saving student data', error });
   }
 });
@@ -122,13 +122,13 @@ app.post('/api/students/:id/feedback', async (req, res) => {
             return res.status(404).json({ message: 'Student not found' });
         }
 
-        const { studentName, subject1, subject2, subject3, subject4, subject5 } = student;
-        const marks = [subject1, subject2, subject3, subject4, subject5];
+        // *** THIS SECTION IS UPDATED with new subject names ***
+        const { studentName, tamil, english, maths, science, social } = student;
+        const marks = `Tamil: ${tamil}, English: ${english}, Maths: ${maths}, Science: ${science}, Social: ${social}`;
 
-        // Construct a detailed prompt for the AI
         const prompt = `
             Act as an experienced academic advisor. Analyze the performance of a student named ${studentName}.
-            The student's marks in 5 subjects are: ${marks.join(', ')}.
+            The student's marks are: ${marks}.
             
             Provide a concise, constructive, and encouraging analysis in about 3-4 sentences.
             - Start by mentioning a positive aspect, if any.
@@ -137,22 +137,13 @@ app.post('/api/students/:id/feedback', async (req, res) => {
             - Do not use bullet points. Write it as a single paragraph.
         `;
         
-        // Call the Gemini API
-        // This will use the GEMINI_API_KEY from Render's environment variables when deployed.
-        // For local testing, it uses your provided API key as a fallback.
         const GEMINI_API_KEY = process.env.GEMINI_API_KEY || 'AIzaSyDqM-T9d3T1U79bHM7m7J_i-oATUDULQCM';
         const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${GEMINI_API_KEY}`;
 
         const response = await fetch(API_URL, {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                contents: [{
-                    parts: [{ text: prompt }]
-                }]
-            })
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
         });
 
         if (!response.ok) {
