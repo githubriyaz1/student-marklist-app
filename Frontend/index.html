@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Mark List Generator</title>
+    <!-- Link to Custom CSS -->
+    <link rel="stylesheet" href="style.css">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- jsPDF Libraries for PDF Generation -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
+</head>
+<body>
+
+    <div class="container">
+        <header>
+            <h1>Student Mark List Generator</h1>
+            <p>Enter student details and marks to generate a comprehensive report card.</p>
+        </header>
+
+        <!-- Glassy Form Card -->
+        <div class="form-container glass-effect">
+            <h2><i class="icon">📝</i> Add New Student</h2>
+            <form id="addStudentForm">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="studentName">Student Name</label>
+                        <input type="text" id="studentName" placeholder="e.g., John Doe" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="registerNumber">Register Number</label>
+                        <input type="text" id="registerNumber" placeholder="e.g., 21CS001" required>
+                    </div>
+                </div>
+                <fieldset>
+                    <legend>Enter Marks (out of 100)</legend>
+                    <div class="marks-row">
+                        <div class="form-group">
+                            <label for="subject1">Subject 1</label>
+                            <input type="number" id="subject1" min="0" max="100" placeholder="e.g., 95" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="subject2">Subject 2</label>
+                            <input type="number" id="subject2" min="0" max="100" placeholder="e.g., 88" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="subject3">Subject 3</label>
+                            <input type="number" id="subject3" min="0" max="100" placeholder="e.g., 76" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="subject4">Subject 4</label>
+                            <input type="number" id="subject4" min="0" max="100" placeholder="e.g., 92" required>
+                        </div>
+                         <div class="form-group">
+                            <label for="subject5">Subject 5</label>
+                            <input type="number" id="subject5" min="0" max="100" placeholder="e.g., 85" required>
+                        </div>
+                    </div>
+                </fieldset>
+                <button type="submit" class="submit-btn">Add Student & Generate List</button>
+            </form>
+            <div id="form-message"></div>
+        </div>
+
+        <!-- Mark List Display Area -->
+        <div class="marklist-container">
+            <h2><i class="icon">📊</i> Generated Mark Lists</h2>
+            <div class="table-wrapper glass-effect">
+                <table id="marklist-table">
+                    <thead>
+                        <tr>
+                            <th>Reg. No.</th>
+                            <th>Name</th>
+                            <th>Sub 1</th>
+                            <th>Sub 2</th>
+                            <th>Sub 3</th>
+                            <th>Sub 4</th>
+                            <th>Sub 5</th>
+                            <th>Total</th>
+                            <th>Average</th>
+                            <th>Grade</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="marklist-body">
+                        <!-- Student data will be dynamically inserted here -->
+                    </tbody>
+                </table>
+                 <div id="loading-spinner" class="spinner-container" style="display: none;">
+                    <div class="spinner"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Link to Custom JavaScript -->
+    <script src="script.js"></script>
+</body>
+</html>

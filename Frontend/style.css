@@ -1,0 +1,218 @@
+/* style.css */
+
+/* --- General Body and Font Styling --- */
+body {
+    font-family: 'Poppins', sans-serif;
+    background-color: #f0f2f5;
+    background-image: 
+        linear-gradient(to right top, #6d327c, #485DA6, #00a1ba, #00BF98, #36C486);
+    color: #333;
+    margin: 0;
+    padding: 2rem;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+}
+
+/* --- Main Container --- */
+.container {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+/* --- Header Styling --- */
+header {
+    text-align: center;
+    margin-bottom: 2rem;
+    color: #fff;
+}
+
+header h1 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+header p {
+    font-size: 1.1rem;
+    font-weight: 300;
+}
+
+/* --- Glass Effect --- */
+.glass-effect {
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 16px;
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(7px);
+    -webkit-backdrop-filter: blur(7px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    padding: 2rem;
+}
+
+/* --- Form Container Styling --- */
+.form-container, .marklist-container {
+    margin-bottom: 2rem;
+}
+
+h2 {
+    font-size: 1.5rem;
+    margin-bottom: 1.5rem;
+    color: #fff;
+    font-weight: 600;
+    border-bottom: 2px solid rgba(255, 255, 255, 0.5);
+    padding-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+}
+
+h2 .icon {
+    margin-right: 0.75rem;
+    font-style: normal;
+}
+
+/* --- Form Elements Styling --- */
+.form-row, .marks-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+}
+
+label {
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+    color: #f0f2f5;
+}
+
+input[type="text"], input[type="number"] {
+    padding: 0.75rem 1rem;
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.2);
+    color: #fff;
+    font-size: 1rem;
+    font-family: 'Poppins', sans-serif;
+    transition: all 0.3s ease;
+}
+
+input::placeholder {
+    color: rgba(255, 255, 255, 0.7);
+}
+
+input:focus {
+    outline: none;
+    background: rgba(255, 255, 255, 0.3);
+    box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.5);
+}
+
+fieldset {
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+legend {
+    padding: 0 0.5rem;
+    color: #f0f2f5;
+    font-weight: 500;
+}
+
+/* --- Button Styling --- */
+.submit-btn, .pdf-btn {
+    width: 100%;
+    padding: 0.85rem 1rem;
+    border: none;
+    border-radius: 8px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    color: #485DA6;
+    background: #fff;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.submit-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+}
+
+/* --- Table Styling --- */
+.table-wrapper {
+    overflow-x: auto;
+}
+
+#marklist-table {
+    width: 100%;
+    border-collapse: collapse;
+    color: #fff;
+}
+
+#marklist-table th, #marklist-table td {
+    padding: 1rem;
+    text-align: left;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+#marklist-table thead {
+    background: rgba(0, 0, 0, 0.1);
+}
+
+#marklist-table th {
+    font-weight: 600;
+}
+
+#marklist-table tbody tr {
+    transition: background-color 0.3s ease;
+}
+
+#marklist-table tbody tr:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.pdf-btn {
+    font-size: 0.9rem;
+    padding: 0.5rem 1rem;
+    width: auto;
+    background: #00BF98;
+    color: #fff;
+}
+
+.pdf-btn:hover {
+    background: #00a182;
+}
+
+/* --- Messages and Spinners --- */
+#form-message {
+    margin-top: 1rem;
+    text-align: center;
+    font-weight: 500;
+}
+
+.spinner-container {
+    display: flex;
+    justify-content: center;
+    padding: 2rem;
+}
+
+.spinner {
+    border: 5px solid rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    border-top: 5px solid #fff;
+    width: 50px;
+    height: 50px;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
