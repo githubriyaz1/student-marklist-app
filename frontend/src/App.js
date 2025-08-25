@@ -149,7 +149,6 @@ function MarklistTable({ students, isLoading, error }) {
         setCurrentStudent(null);
     };
     
-    // *** PDF FIX IS HERE ***
     const generatePDF = (student) => {
         const doc = new jsPDF();
         doc.setFontSize(20);
@@ -161,7 +160,7 @@ function MarklistTable({ students, isLoading, error }) {
 
         const tableBody = SUBJECTS.map(subject => [
             subject.toUpperCase(),
-            student[subject]
+            student[subject] || 'N/A' // Handle missing subject data
         ]);
 
         doc.autoTable({
@@ -178,9 +177,9 @@ function MarklistTable({ students, isLoading, error }) {
         doc.text('Result Summary', 20, finalY);
         doc.setFontSize(12);
         doc.setFont(undefined, 'normal');
-        doc.text(`Total Marks: ${student.total} / 500`, 20, finalY + 10);
-        doc.text(`Average: ${student.average.toFixed(2)}%`, 20, finalY + 20);
-        doc.text(`Grade: ${student.grade}`, 20, finalY + 30);
+        doc.text(`Total Marks: ${typeof student.total === 'number' ? student.total : 'N/A'} / 500`, 20, finalY + 10);
+        doc.text(`Average: ${typeof student.average === 'number' ? student.average.toFixed(2) : 'N/A'}%`, 20, finalY + 20);
+        doc.text(`Grade: ${student.grade || 'N/A'}`, 20, finalY + 30);
         doc.save(`${student.registerNumber}_${student.studentName}_report.pdf`);
     };
 
@@ -207,13 +206,14 @@ function MarklistTable({ students, isLoading, error }) {
                         <tr key={student._id}>
                             <td>{student.registerNumber}</td>
                             <td>{student.studentName}</td>
-                            {SUBJECTS.map(s => <td key={s}>{student[s]}</td>)}
-                            <td><b>{student.total}</b></td>
-                            <td>{student.average.toFixed(2)}</td>
-                            <td><b>{student.grade}</b></td>
+                            {SUBJECTS.map(s => <td key={s}>{student[s] ?? 'N/A'}</td>)}
+                            <td><b>{typeof student.total === 'number' ? student.total : 'N/A'}</b></td>
+                            {/* *** THE FIX IS HERE *** */}
+                            <td>{typeof student.average === 'number' ? student.average.toFixed(2) : 'N/A'}</td>
+                            <td><b>{student.grade || 'N/A'}</b></td>
                             <td className="actions-cell">
                                 <button className="pdf-btn" onClick={() => generatePDF(student)}>PDF</button>
-                                <button className="ai-btn" onClick={() => handleGetFeedback(student)}>AI Feedback</button>
+                                <button className="ai-btn" onClick={() => handleGetFeedback(student)} disabled={!student.grade}>AI Feedback</button>
                             </td>
                         </tr>
                     ))}
